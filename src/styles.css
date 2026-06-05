@@ -63,8 +63,8 @@
   --popover-foreground: oklch(0.18 0.03 160);
 
   /* Vert profond façon institutionnel/fintech */
-  --primary: oklch(0.38 0.09 160);
-  --primary-foreground: oklch(0.98 0.01 95);
+  --primary: oklch(0.62 0.18 152);
+  --primary-foreground: oklch(0.99 0.01 95);
 
   /* Bleu institutionnel (du logo) */
   --secondary: oklch(0.42 0.13 245);
