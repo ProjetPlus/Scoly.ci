@@ -62,25 +62,25 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.03 160);
 
-  /* Vert profond façon institutionnel/fintech */
-  --primary: oklch(0.62 0.18 152);
+  /* Vert logo MiProjet+ (#00A651) */
+  --primary: oklch(0.605 0.187 148);
   --primary-foreground: oklch(0.99 0.01 95);
 
   /* Bleu institutionnel (du logo) */
   --secondary: oklch(0.42 0.13 245);
   --secondary-foreground: oklch(0.98 0.01 95);
 
-  --muted: oklch(0.96 0.01 150);
-  --muted-foreground: oklch(0.45 0.02 160);
+  --muted: oklch(0.96 0.015 148);
+  --muted-foreground: oklch(0.45 0.02 148);
 
-  --accent: oklch(0.94 0.04 150);
-  --accent-foreground: oklch(0.25 0.06 160);
+  --accent: oklch(0.93 0.06 148);
+  --accent-foreground: oklch(0.25 0.1 148);
 
   /* Or chaud (ambition, financement) */
   --gold: oklch(0.78 0.14 78);
   --gold-foreground: oklch(0.2 0.05 60);
 
-  --success: oklch(0.62 0.16 150);
+  --success: oklch(0.605 0.187 148);
   --success-foreground: oklch(0.98 0.01 95);
 
   --warning: oklch(0.78 0.14 78);
@@ -89,18 +89,18 @@
   --destructive: oklch(0.58 0.22 27);
   --destructive-foreground: oklch(0.98 0.01 95);
 
-  --border: oklch(0.9 0.01 150);
-  --input: oklch(0.92 0.01 150);
-  --ring: oklch(0.62 0.18 152);
+  --border: oklch(0.9 0.02 148);
+  --input: oklch(0.92 0.02 148);
+  --ring: oklch(0.605 0.187 148);
 
-  --sidebar: oklch(0.22 0.05 160);
-  --sidebar-foreground: oklch(0.92 0.02 150);
-  --sidebar-primary: oklch(0.78 0.14 78);
-  --sidebar-primary-foreground: oklch(0.2 0.05 60);
-  --sidebar-accent: oklch(0.28 0.06 160);
+  --sidebar: oklch(0.28 0.09 148);
+  --sidebar-foreground: oklch(0.95 0.02 148);
+  --sidebar-primary: oklch(0.605 0.187 148);
+  --sidebar-primary-foreground: oklch(0.99 0.01 95);
+  --sidebar-accent: oklch(0.36 0.1 148);
   --sidebar-accent-foreground: oklch(0.98 0.01 95);
-  --sidebar-border: oklch(0.3 0.05 160);
-  --sidebar-ring: oklch(0.78 0.14 78);
+  --sidebar-border: oklch(0.38 0.08 148);
+  --sidebar-ring: oklch(0.605 0.187 148);
 }
 
 .dark {
