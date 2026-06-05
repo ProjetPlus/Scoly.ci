@@ -113,6 +113,6 @@ export function computeScore(project: ProjectInput, records: RecordInput[]): Sco
 export function niveauColor(niveau: string): string {
   if (niveau === "Finançable") return "text-success bg-success/10 border-success/30";
   if (niveau === "Prometteur") return "text-gold bg-gold/10 border-gold/30";
-  if (niveau === "Fragile") return "text-orange-600 bg-orange-100 border-orange-300";
+  if (niveau === "Fragile") return "text-warning bg-warning/10 border-warning/30";
   return "text-destructive bg-destructive/10 border-destructive/30";
 }

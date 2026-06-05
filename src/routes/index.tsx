@@ -371,7 +371,7 @@ function ScoreSection() {
   const levels = [
     { r: "80-100", l: "Finançable", color: "bg-primary text-primary-foreground" },
     { r: "60-79", l: "Prometteur", color: "bg-gold text-gold-foreground" },
-    { r: "40-59", l: "Fragile", color: "bg-orange-500 text-white" },
+    { r: "40-59", l: "Fragile", color: "bg-warning text-warning-foreground" },
     { r: "< 40", l: "À renforcer", color: "bg-destructive text-destructive-foreground" },
   ];
   return (
