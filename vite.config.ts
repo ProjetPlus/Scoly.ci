@@ -13,7 +13,10 @@ export default defineConfig({
   },
   // Force Nitro on with the Vercel preset so `vercel build` produces a working SSR output
   // (.vercel/output/). Lovable's own sandbox/deploy keeps using Cloudflare via its detection.
-  nitro: {
-    preset: process.env.VERCEL ? "vercel" : "cloudflare-module",
-  },
+  nitro: process.env.VERCEL
+    ? {
+        preset: "vercel",
+        output: { dir: ".vercel/output", serverDir: ".vercel/output/functions/__nitro.func", publicDir: ".vercel/output/static" },
+      }
+    : { preset: "cloudflare-module" },
 });
