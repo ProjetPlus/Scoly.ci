@@ -122,7 +122,7 @@ function ScorePage() {
 
           <div className="grid md:grid-cols-3 gap-5">
             <Card title="Forces" icon={CheckCircle2} color="text-success" items={score.forces} empty="Continuez à enregistrer pour révéler vos forces." />
-            <Card title="Faiblesses" icon={AlertTriangle} color="text-orange-600" items={score.faiblesses} empty="Aucune faiblesse identifiée." />
+            <Card title="Faiblesses" icon={AlertTriangle} color="text-warning" items={score.faiblesses} empty="Aucune faiblesse identifiée." />
             <Card title="Recommandations" icon={Lightbulb} color="text-gold" items={score.recommandations} empty="Vous êtes sur la bonne voie." />
           </div>
         </>

@@ -1,9 +1,10 @@
 import { createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
-import { LayoutDashboard, FolderKanban, Wallet, Gauge, LogOut, User2 } from "lucide-react";
+import { LayoutDashboard, FolderKanban, Wallet, Gauge, LogOut, User2, LifeBuoy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { MobileOnboarding } from "@/components/MobileOnboarding";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -20,6 +21,7 @@ const NAV = [
   { to: "/projets", icon: FolderKanban, label: "Mes projets" },
   { to: "/finances", icon: Wallet, label: "Finances" },
   { to: "/score", icon: Gauge, label: "MiProjet Score" },
+  { to: "/support", icon: LifeBuoy, label: "Accompagnement" },
 ];
 
 function AuthLayout() {
@@ -81,6 +83,7 @@ function AuthLayout() {
         </nav>
         <main className="flex-1 overflow-auto"><Outlet /></main>
       </div>
+      <MobileOnboarding />
     </div>
   );
 }
