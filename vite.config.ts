@@ -11,18 +11,9 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     server: { entry: "server" },
   },
-  // Force Nitro on with the Vercel preset so `vercel build` produces a working SSR output
-  // (.vercel/output/). Lovable's own sandbox/deploy keeps using Cloudflare via its detection.
-  // On Vercel: nitro emits a Vercel-native output bundle (.vercel/output).
-  // Lovable's own sandbox/deploy continues to use Cloudflare Workers.
   nitro: process.env.VERCEL
     ? {
         preset: "vercel",
-        output: {
-          dir: ".vercel/output",
-          serverDir: ".vercel/output/functions/__nitro.func",
-          publicDir: ".vercel/output/static",
-        },
       }
     : { preset: "cloudflare-module" },
 });
