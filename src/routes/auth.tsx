@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
+  ssr: false,
   head: () => ({ meta: [{ title: "Connexion · MiProjet+" }] }),
   component: AuthPage,
 });
@@ -68,7 +69,7 @@ function AuthPage() {
       </div>
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-sm">
-          <div className="md:hidden mb-8"><Logo className="h-8" /></div>
+          <div className="md:hidden mb-8"><Logo className="h-8 w-auto" plus={false} /></div>
           <h1 className="text-3xl font-bold">{mode === "signin" ? "Connexion" : "Créer un compte"}</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             {mode === "signin" ? "Accédez à votre espace MiProjet+." : "Commencez gratuitement, en quelques secondes."}

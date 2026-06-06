@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchMyProjects, fetchAllUserRecords } from "@/lib/data";
+import { MiProjetCard } from "@/components/MiProjetCard";
 import { formatXOF, recordFlow, recordLabel } from "@/lib/financial-types";
-import { computeScore, niveauColor } from "@/lib/scoring";
+import { computeScore } from "@/lib/scoring";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, ArrowDownRight, Plus, TrendingUp, FolderKanban, Wallet } from "lucide-react";
 
@@ -49,6 +50,17 @@ function Dashboard() {
         <EmptyState />
       ) : (
         <>
+          <MiProjetCard
+            ownerName={user.user_metadata?.first_name || user.email?.split("@")[0] || "Titulaire MiPROJET+"}
+            projectName={activeProject?.title}
+            score={score?.score_global}
+            level={score?.niveau}
+            balance={benefice}
+            incomes={entrees}
+            expenses={sorties}
+            operationsCount={records.length}
+          />
+
           <div className="grid md:grid-cols-4 gap-4">
             <KPI label="Entrées totales" value={formatXOF(entrees)} icon={ArrowUpRight} color="text-success" />
             <KPI label="Sorties totales" value={formatXOF(sorties)} icon={ArrowDownRight} color="text-destructive" />

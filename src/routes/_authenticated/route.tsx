@@ -39,7 +39,7 @@ function AuthLayout() {
     <div className="min-h-screen flex bg-muted/30">
       <aside className="w-64 bg-sidebar text-sidebar-foreground flex-col hidden md:flex">
         <div className="p-6 border-b border-sidebar-border">
-          <Link to="/dashboard"><Logo className="h-8 brightness-0 invert" /></Link>
+          <Link to="/dashboard"><Logo className="h-10 w-auto" plus={false} /></Link>
         </div>
         <nav className="flex-1 p-4 space-y-1">
           {NAV.map((item) => {
@@ -68,7 +68,7 @@ function AuthLayout() {
       </aside>
       <div className="flex-1 flex flex-col min-w-0">
         <header className="md:hidden bg-card border-b px-4 h-14 flex items-center justify-between">
-          <Logo className="h-7" />
+          <Logo className="h-7 w-auto" plus={false} />
           <Button onClick={logout} variant="ghost" size="sm"><LogOut className="w-4 h-4" /></Button>
         </header>
         <nav className="md:hidden bg-card border-b px-2 py-2 flex gap-1 overflow-x-auto">

@@ -48,7 +48,7 @@ function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MenuSheet />
-          <Logo className="h-7 sm:h-8" />
+          <Logo className="h-7 sm:h-8 w-auto" plus={false} />
         </div>
         <div className="flex items-center gap-1">
           <ThemeToggle />
@@ -87,7 +87,7 @@ function MenuSheet() {
         <div className="h-full flex flex-col bg-gradient-to-br from-primary/95 via-primary to-primary/80 text-primary-foreground">
           <SheetHeader className="p-6 border-b border-primary-foreground/15">
             <SheetTitle className="text-primary-foreground flex items-center gap-3">
-              <Logo className="h-8" />
+              <Logo className="h-8 w-auto" plus={false} />
             </SheetTitle>
             <p className="text-xs text-primary-foreground/75 mt-2">
               Plateforme inclusive de structuration et de financement
@@ -258,7 +258,7 @@ function LoginCard({ compact = false }: { compact?: boolean }) {
     <div className={`rounded-3xl border bg-card shadow-elevated ${compact ? "p-6" : "p-8 md:p-10"}`}>
       {!compact && (
         <div className="flex flex-col items-center text-center mb-6">
-          <Logo className="h-10" />
+          <Logo className="h-10 w-auto" plus={false} />
           <h2 className="mt-4 text-2xl font-bold">
             {mode === "signin" ? "Connexion" : "Inscription"}
           </h2>
@@ -504,7 +504,7 @@ function Footer() {
     <footer className="border-t bg-card">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
         <div>
-          <Logo className="h-7" />
+          <Logo className="h-7 w-auto" plus={false} />
           <p className="mt-2 text-sm text-muted-foreground max-w-md">
             Une application de l'écosystème{" "}
             <a href="https://ivoireprojet.com" className="text-primary hover:underline">ivoireprojet.com</a>.
