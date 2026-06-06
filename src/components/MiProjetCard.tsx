@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Logo } from "@/components/Logo";
 import { formatXOF } from "@/lib/financial-types";
 import { cn } from "@/lib/utils";
-import { Building2, Chip, Landmark, Signal, WalletCards } from "lucide-react";
+import { Building2, Cpu, Landmark, Signal, WalletCards } from "lucide-react";
 
 type MiProjetCardProps = {
   ownerName: string;
@@ -102,7 +102,7 @@ export function MiProjetCard({
 
                 <div className="flex flex-col justify-between rounded-[24px] border border-white/10 bg-black/15 p-5 backdrop-blur-sm">
                   <div className="flex items-center justify-between">
-                    <Chip className="h-9 w-9 text-gold" />
+                    <Cpu className="h-9 w-9 text-gold" />
                     <div className="text-right text-[11px] uppercase tracking-[0.24em] text-white/60">Carte d’éligibilité</div>
                   </div>
                   <div className="space-y-2">
