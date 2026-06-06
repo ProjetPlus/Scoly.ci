@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchMyProjects, fetchAllUserRecords } from "@/lib/data";
 import { MiProjetCard } from "@/components/MiProjetCard";
 import { formatXOF, recordFlow, recordLabel } from "@/lib/financial-types";
-import { computeScore, niveauColor } from "@/lib/scoring";
+import { computeScore } from "@/lib/scoring";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, ArrowDownRight, Plus, TrendingUp, FolderKanban, Wallet } from "lucide-react";
 
