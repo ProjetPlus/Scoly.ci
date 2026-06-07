@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Plus, Trash2, ArrowUpRight, ArrowDownRight, Paperclip, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/finances")({
@@ -152,6 +152,7 @@ function RecordForm({ userId, projects, defaultProject, onDone }: { userId: stri
     record_date: new Date().toISOString().slice(0, 10),
     party_name: "",
   });
+  const [receipt, setReceipt] = useState<File | null>(null);
   const needsParty = ["apport_associe", "pret", "don", "investissement"].includes(form.record_type);
 
   const m = useMutation({
@@ -159,6 +160,14 @@ function RecordForm({ userId, projects, defaultProject, onDone }: { userId: stri
       const desc = needsParty && form.party_name
         ? `${form.description ? form.description + " — " : ""}Source : ${form.party_name}`
         : form.description;
+      let receipt_path: string | null = null;
+      if (receipt) {
+        const ext = receipt.name.split(".").pop() || "bin";
+        const path = `${userId}/${form.project_id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const up = await supabase.storage.from("documents").upload(path, receipt, { upsert: false });
+        if (up.error) throw up.error;
+        receipt_path = path;
+      }
       const { error } = await supabase.from("mp_financial_records").insert({
         user_id: userId,
         project_id: form.project_id,
@@ -168,6 +177,7 @@ function RecordForm({ userId, projects, defaultProject, onDone }: { userId: stri
         amount: Number(form.amount),
         record_date: form.record_date,
         currency: "XOF",
+        receipt_path,
       });
       if (error) throw error;
     },
@@ -222,6 +232,20 @@ function RecordForm({ userId, projects, defaultProject, onDone }: { userId: stri
       <div>
         <Label>Description (optionnel)</Label>
         <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="mt-1.5" rows={2} />
+      </div>
+      <div className="rounded-xl border border-dashed p-3 bg-muted/30">
+        <Label className="flex items-center gap-2 text-sm font-medium">
+          <Paperclip className="w-4 h-4 text-primary" /> Reçu / facture (optionnel)
+        </Label>
+        <p className="text-xs text-muted-foreground mt-1">PDF, image — booste votre score Financier.</p>
+        <label className="mt-2 flex items-center gap-2 cursor-pointer">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-card border text-xs font-medium hover:border-primary">
+            <Upload className="w-3.5 h-3.5" /> {receipt ? "Changer" : "Joindre un fichier"}
+          </span>
+          {receipt && <span className="text-xs text-muted-foreground truncate">{receipt.name}</span>}
+          <input type="file" accept="image/*,application/pdf" className="hidden"
+            onChange={(e) => setReceipt(e.target.files?.[0] ?? null)} />
+        </label>
       </div>
       <Button type="submit" disabled={m.isPending || !form.project_id} className="w-full bg-primary hover:bg-primary/90">
         {m.isPending ? "Enregistrement…" : "Enregistrer"}
