@@ -80,16 +80,55 @@ function ProjectsPage() {
   );
 }
 
+const PROJECT_TYPES = [
+  { value: "micro", label: "Micro / Petite activité (commerce, vente ambulante…)", short: "Micro-activité" },
+  { value: "pme", label: "PME (entreprise constituée)", short: "PME" },
+  { value: "startup", label: "Startup (innovation, croissance)", short: "Startup" },
+];
+
 function ProjectForm({ userId, onDone }: { userId: string; onDone: () => void }) {
   const [form, setForm] = useState({
-    title: "", description: "", sector: "", legal_status: "", city: "", country: "Côte d'Ivoire",
-    creation_date: "", employees_count: 0, has_accounting: false, has_bank_account: false, has_business_plan: false,
+    title: "", description: "", project_type: "micro",
+    sector: "", legal_status: "", city: "", country: "Côte d'Ivoire",
+    creation_date: "", employees_count: 0,
+    has_accounting: false, has_bank_account: false, has_business_plan: false,
+    // Présentation (PME / Startup uniquement)
+    short_pitch: "",
+    product_description: "",
+    commercialization: "",
+    target_customers: "",
+    monitoring_evaluation: "",
+    publish_when_eligible: false,
   });
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const isPro = form.project_type !== "micro";
+
+  async function uploadIfAny(file: File | null, kind: string): Promise<string | null> {
+    if (!file) return null;
+    const ext = file.name.split(".").pop() || "bin";
+    const path = `${userId}/projects/${kind}-${Date.now()}.${ext}`;
+    const up = await supabase.storage.from("documents").upload(path, file, { upsert: true });
+    if (up.error) throw up.error;
+    return path;
+  }
 
   const m = useMutation({
     mutationFn: async () => {
+      const logo_path = await uploadIfAny(logoFile, "logo");
+      const cover_path = await uploadIfAny(coverFile, "cover");
       const payload: any = { user_id: userId, ...form };
       if (!payload.creation_date) delete payload.creation_date;
+      if (logo_path) payload.logo_url = logo_path;
+      if (cover_path) payload.cover_url = cover_path;
+      if (form.project_type === "micro") {
+        // n'envoie pas les champs PME/Startup
+        delete payload.short_pitch;
+        delete payload.product_description;
+        delete payload.commercialization;
+        delete payload.target_customers;
+        delete payload.monitoring_evaluation;
+      }
       const { error } = await supabase.from("mp_projects").insert(payload);
       if (error) throw error;
     },
@@ -98,13 +137,23 @@ function ProjectForm({ userId, onDone }: { userId: string; onDone: () => void })
   });
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); m.mutate(); }} className="space-y-4">
+    <form onSubmit={(e) => { e.preventDefault(); m.mutate(); }} className="space-y-4 max-h-[75vh] overflow-y-auto pr-1">
+      <div>
+        <Label>Type d'activité *</Label>
+        <Select value={form.project_type} onValueChange={(v) => setForm({ ...form, project_type: v })}>
+          <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+          <SelectContent>{PROJECT_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground mt-1">
+          {isPro ? "Présentation marketing requise pour valoriser sur la plateforme mère." : "Mode simplifié — pas de fiche marketing détaillée."}
+        </p>
+      </div>
       <div>
         <Label>Nom du projet / activité *</Label>
         <Input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="mt-1.5" />
       </div>
       <div>
-        <Label>Description</Label>
+        <Label>Description courte</Label>
         <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="mt-1.5" rows={2} />
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -155,9 +204,59 @@ function ProjectForm({ userId, onDone }: { userId: string; onDone: () => void })
           </label>
         ))}
       </div>
-      <Button type="submit" disabled={m.isPending} className="w-full bg-primary hover:bg-primary/90">
+
+      {isPro && (
+        <>
+          <div className="pt-3 border-t">
+            <h3 className="font-semibold mb-2 text-sm">🎨 Identité visuelle</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <FileField label="Logo" file={logoFile} onChange={setLogoFile} accept="image/*" hint="PNG / SVG carré" />
+              <FileField label="Photo de couverture" file={coverFile} onChange={setCoverFile} accept="image/*" hint="16:9 paysage" />
+            </div>
+          </div>
+          <div className="pt-3 border-t space-y-3">
+            <h3 className="font-semibold text-sm">📝 Présentation stratégique</h3>
+            <CharField label="Pitch court (max 280 car.)" max={280} value={form.short_pitch} onChange={(v) => setForm({ ...form, short_pitch: v })} placeholder="Une phrase percutante qui décrit votre proposition de valeur." />
+            <CharField label="Produit / service proposé (max 600 car.)" max={600} value={form.product_description} onChange={(v) => setForm({ ...form, product_description: v })} placeholder="Que vendez-vous ? Quelle qualité, quelle particularité ?" />
+            <CharField label="Processus de commercialisation (max 500 car.)" max={500} value={form.commercialization} onChange={(v) => setForm({ ...form, commercialization: v })} placeholder="Comment commercialisez-vous ? Canaux, prix, paiement…" />
+            <CharField label="Clientèle cible (max 400 car.)" max={400} value={form.target_customers} onChange={(v) => setForm({ ...form, target_customers: v })} placeholder="Qui sont vos clients ? Profil, zone, volume…" />
+            <CharField label="Suivi & évaluation (max 400 car.)" max={400} value={form.monitoring_evaluation} onChange={(v) => setForm({ ...form, monitoring_evaluation: v })} placeholder="Comment mesurez-vous les résultats ? Indicateurs, reporting…" />
+          </div>
+          <label className="flex items-start gap-2 text-sm pt-2 border-t">
+            <Checkbox checked={form.publish_when_eligible} onCheckedChange={(c) => setForm({ ...form, publish_when_eligible: !!c })} />
+            <span>Publier automatiquement sur <strong>ivoireprojet.com</strong> dès que le projet atteint le niveau <strong>Finançable</strong>.</span>
+          </label>
+        </>
+      )}
+
+      <Button type="submit" disabled={m.isPending} className="w-full bg-primary hover:bg-primary/90 sticky bottom-0">
         {m.isPending ? "…" : "Créer le projet"}
       </Button>
     </form>
+  );
+}
+
+function FileField({ label, file, onChange, accept, hint }: { label: string; file: File | null; onChange: (f: File | null) => void; accept: string; hint?: string }) {
+  return (
+    <div>
+      <Label className="text-xs">{label}</Label>
+      <label className="mt-1.5 flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed bg-muted/30 p-3 cursor-pointer hover:border-primary">
+        <span className="text-xs font-medium truncate max-w-full">{file ? file.name : "Cliquer pour choisir"}</span>
+        {hint && !file && <span className="text-[10px] text-muted-foreground">{hint}</span>}
+        <input type="file" accept={accept} className="hidden" onChange={(e) => onChange(e.target.files?.[0] ?? null)} />
+      </label>
+    </div>
+  );
+}
+
+function CharField({ label, max, value, onChange, placeholder }: { label: string; max: number; value: string; onChange: (v: string) => void; placeholder?: string }) {
+  return (
+    <div>
+      <div className="flex justify-between">
+        <Label className="text-xs">{label}</Label>
+        <span className={`text-[10px] ${value.length > max ? "text-destructive" : "text-muted-foreground"}`}>{value.length}/{max}</span>
+      </div>
+      <Textarea value={value} onChange={(e) => onChange(e.target.value.slice(0, max))} className="mt-1" rows={3} placeholder={placeholder} />
+    </div>
   );
 }
