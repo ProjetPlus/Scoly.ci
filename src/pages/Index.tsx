@@ -3,7 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import FeaturedProductsCarousel from "@/components/FeaturedProductsCarousel";
 import FlashDeals from "@/components/FlashDeals";
 import KitsHeroCarousel from "@/components/KitsHeroCarousel";
-import JumiaCategoryTiles from "@/components/JumiaCategoryTiles";
+
 import HomeCategoryRows from "@/components/HomeCategoryRows";
 import TrustStrip from "@/components/TrustStrip";
 
@@ -30,7 +30,6 @@ const Index = () => {
       {/* 2. Kits École — carrousel premium juste après le hero */}
       <KitsHeroCarousel />
       {/* 3. Boutique directement sur la home */}
-      <JumiaCategoryTiles />
       <FlashDeals />
       <FeaturedProductsCarousel />
       <HomeCategoryRows />
