@@ -10,12 +10,7 @@
 - [Livraison & retours](/livraison-retours)
 
 ## Catégories publiques
-- [Maternelle](/shop?category=scoly-maternelle)
-- [Scoly Bureautique](/shop?category=scoly-bureautique)
-- [Scoly Librairie](/shop?category=scoly-librairie)
-- [Scoly Primaire](/shop?category=scoly-primaire)
-- [Scoly Secondaire](/shop?category=scoly-secondaire)
-- [Scoly Université](/shop?category=scoly-universite)
+
 
 ## Produits récents
 
