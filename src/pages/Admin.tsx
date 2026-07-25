@@ -62,6 +62,7 @@ import CampaignAnalyticsDashboard from "@/components/admin/CampaignAnalyticsDash
 import ProviderMonitoring from "@/components/admin/ProviderMonitoring";
 import ZonesManagement from "@/components/admin/ZonesManagement";
 import SchoolKitsManagement from "@/components/admin/SchoolKitsManagement";
+import ScholarKitsManagement from "@/components/admin/ScholarKitsManagement";
 import SmartImage from "@/components/SmartImage";
 
 import { sortCategories, getCategoryInitials } from "@/lib/categoryAssets";
@@ -94,6 +95,7 @@ type TabType =
   | "flash_deals"
   | "zones"
   | "school_kits"
+  | "scholar_kits"
   ;
 
 const Admin = () => {
@@ -115,6 +117,7 @@ const Admin = () => {
       label: "Catalogue",
       items: [
         { id: "products", label: "Produits", icon: Package },
+        { id: "scholar_kits", label: "Kits scolaires", icon: Package },
         { id: "school_kits", label: "Kits école", icon: Package },
         { id: "categories", label: "Catégories", icon: FolderTree },
         { id: "flash_deals", label: "Ventes flash", icon: Zap },
@@ -316,6 +319,7 @@ const Admin = () => {
           {activeTab === "settings" && <PlatformSettings />}
           {activeTab === "zones" && <ZonesManagement />}
           {activeTab === "school_kits" && <SchoolKitsManagement />}
+          {activeTab === "scholar_kits" && <ScholarKitsManagement />}
           </div>
         </div>
       </div>
