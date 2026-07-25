@@ -62,6 +62,7 @@ import CampaignAnalyticsDashboard from "@/components/admin/CampaignAnalyticsDash
 import ProviderMonitoring from "@/components/admin/ProviderMonitoring";
 import ZonesManagement from "@/components/admin/ZonesManagement";
 import SchoolKitsManagement from "@/components/admin/SchoolKitsManagement";
+import ScholarKitsManagement from "@/components/admin/ScholarKitsManagement";
 import SmartImage from "@/components/SmartImage";
 
 import { sortCategories, getCategoryInitials } from "@/lib/categoryAssets";
