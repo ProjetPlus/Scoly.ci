@@ -115,6 +115,7 @@ const Admin = () => {
       label: "Catalogue",
       items: [
         { id: "products", label: "Produits", icon: Package },
+        { id: "scholar_kits", label: "Kits scolaires", icon: Package },
         { id: "school_kits", label: "Kits école", icon: Package },
         { id: "categories", label: "Catégories", icon: FolderTree },
         { id: "flash_deals", label: "Ventes flash", icon: Zap },
