@@ -95,6 +95,7 @@ type TabType =
   | "flash_deals"
   | "zones"
   | "school_kits"
+  | "scholar_kits"
   ;
 
 const Admin = () => {
