@@ -101,11 +101,12 @@ const ScholarKitsManagement = () => {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const query: any = supabase
       .from("smart_kits")
       .select("*, school:schools(name, code)")
-      .eq("kind" as any, KIND)
+      .eq("kind", KIND)
       .order("created_at", { ascending: false });
+    const { data, error } = await query;
     if (error) toast.error("Erreur de chargement");
     setKits((data as any) || []);
     setLoading(false);
