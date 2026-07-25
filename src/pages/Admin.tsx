@@ -319,6 +319,7 @@ const Admin = () => {
           {activeTab === "settings" && <PlatformSettings />}
           {activeTab === "zones" && <ZonesManagement />}
           {activeTab === "school_kits" && <SchoolKitsManagement />}
+          {activeTab === "scholar_kits" && <ScholarKitsManagement />}
           </div>
         </div>
       </div>
