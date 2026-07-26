@@ -45,6 +45,7 @@ const CookiesPolicy = lazy(() => import("./pages/CookiesPolicy"));
 const AuthConfirm = lazy(() => import("./pages/AuthConfirm"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const KitsEcole = lazy(() => import("./pages/KitsEcole"));
+const KitDetail = lazy(() => import("./pages/KitDetail"));
 const Referral = lazy(() => import("./pages/Referral"));
 const DeliveryReturns = lazy(() => import("./pages/DeliveryReturns"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
