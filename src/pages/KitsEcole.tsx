@@ -394,6 +394,9 @@ const KitsEcole = () => {
                           <Button size="sm" variant="outline" className="w-full h-7 text-[10px]" onClick={() => handleAddKit(kit)} disabled={isBuying}>
                             <ShoppingCart className="h-3 w-3 mr-1" /> Ajouter au panier
                           </Button>
+                          <Link to={`/kits-scolaires/${kit.id}`} className="text-[10px] text-center text-primary hover:underline">
+                            Voir le détail
+                          </Link>
                         </div>
                       </div>
                     </CardContent>
