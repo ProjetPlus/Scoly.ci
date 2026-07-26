@@ -152,6 +152,7 @@ const App = () => (
                       <Route path="/auth/confirm" element={<AuthConfirm />} />
                       <Route path="/auth/reset-password" element={<ResetPassword />} />
                       <Route path="/kits-scolaires" element={<KitsEcole />} />
+                      <Route path="/kits-scolaires/:id" element={<KitDetail />} />
                       <Route path="/client" element={<ClientAccess />} />
                       <Route path="/me" element={<ReferentAccess />} />
                       <Route path="/parrainage" element={<Navigate to="/me" replace />} />

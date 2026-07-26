@@ -93,11 +93,11 @@ const KitsEcole = () => {
         .eq("status", "published")
         .order("grade_level", { ascending: true });
       if (isPublic) {
-        q = q.is("school_id", null);
+        q = q.eq("kind", "scolaire");
       } else if (school) {
-        q = q.eq("school_id", school.id);
+        q = q.eq("kind", "ecole").eq("school_id", school.id);
       } else {
-        q = q.not("school_id", "is", null);
+        q = q.eq("kind", "ecole").not("school_id", "is", null);
       }
       const { data } = await q;
       const parsed: Kit[] = (data || []).map((k: any) => ({
