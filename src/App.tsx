@@ -45,6 +45,7 @@ const CookiesPolicy = lazy(() => import("./pages/CookiesPolicy"));
 const AuthConfirm = lazy(() => import("./pages/AuthConfirm"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const KitsEcole = lazy(() => import("./pages/KitsEcole"));
+const KitDetail = lazy(() => import("./pages/KitDetail"));
 const Referral = lazy(() => import("./pages/Referral"));
 const DeliveryReturns = lazy(() => import("./pages/DeliveryReturns"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
@@ -152,6 +153,7 @@ const App = () => (
                       <Route path="/auth/confirm" element={<AuthConfirm />} />
                       <Route path="/auth/reset-password" element={<ResetPassword />} />
                       <Route path="/kits-scolaires" element={<KitsEcole />} />
+                      <Route path="/kits-scolaires/:id" element={<KitDetail />} />
                       <Route path="/client" element={<ClientAccess />} />
                       <Route path="/me" element={<ReferentAccess />} />
                       <Route path="/parrainage" element={<Navigate to="/me" replace />} />

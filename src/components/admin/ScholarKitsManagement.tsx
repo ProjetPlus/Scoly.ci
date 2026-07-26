@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-import { Plus, Trash2, Pencil, Package, Save, X, Upload, Image as ImageIcon, ArrowUp, ArrowDown, Power } from "lucide-react";
+import { Plus, Trash2, Pencil, Package, Save, X, Upload, Image as ImageIcon, ArrowUp, ArrowDown, Power, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,9 +18,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SchoolCombobox, type SchoolOption } from "@/components/kits/SchoolCombobox";
 
 const KIND = "scolaire" as const;
+const MAX_SIZE = 5 * 1024 * 1024;
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 const CATEGORIES = [
   { value: "kit_maternelle", label: "Kit Maternelle" },
@@ -37,14 +38,12 @@ type Kit = {
   name: string;
   category: string | null;
   grade_level: string;
-  school_id: string | null;
   image_url: string | null;
   total_price: number | null;
   status: string;
   is_active: boolean;
   options: string | null;
   description: string | null;
-  school?: { name: string; code: string | null } | null;
 };
 
 const emptyForm = {
@@ -52,8 +51,6 @@ const emptyForm = {
   name: "",
   category: "",
   grade_level: "",
-  school_id: "",
-  school: null as SchoolOption | null,
   image_url: "",
   description: "",
   options: "",
@@ -70,19 +67,25 @@ const ScholarKitsManagement = () => {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [form, setForm] = useState({ ...emptyForm });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Filters
   const [filterCategory, setFilterCategory] = useState<string>("all");
-  const [filterSchool, setFilterSchool] = useState<string>("all");
   const [filterActive, setFilterActive] = useState<string>("all");
 
+  const validateFile = (file: File): string | null => {
+    if (!ALLOWED_TYPES.includes(file.type)) return "Format non supporté (JPG, PNG ou WEBP uniquement).";
+    if (file.size > MAX_SIZE) return `Image trop lourde (${(file.size / 1024 / 1024).toFixed(1)} Mo · max 5 Mo).`;
+    return null;
+  };
+
   const uploadCover = async (file: File) => {
-    if (!file.type.startsWith("image/")) return toast.error("Seules les images sont autorisées.");
-    if (file.size > 5 * 1024 * 1024) return toast.error("Image trop lourde (max 5 Mo).");
+    setUploadError(null);
+    const err = validateFile(file);
+    if (err) { setUploadError(err); toast.error(err); return; }
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return toast.error("Non authentifié");
+    if (!user) { setUploadError("Non authentifié"); return toast.error("Non authentifié"); }
     setUploading(true);
     try {
       const ext = file.name.split(".").pop() || "jpg";
@@ -93,7 +96,9 @@ const ScholarKitsManagement = () => {
       setForm((f) => ({ ...f, image_url: data.publicUrl }));
       toast.success("Image téléchargée.");
     } catch (e: any) {
-      toast.error(e.message || "Échec de l'upload");
+      const msg = e.message || "Échec de l'upload";
+      setUploadError(msg);
+      toast.error(msg);
     } finally {
       setUploading(false);
     }
@@ -101,12 +106,11 @@ const ScholarKitsManagement = () => {
 
   const load = async () => {
     setLoading(true);
-    const query: any = supabase
+    const { data, error } = await supabase
       .from("smart_kits")
-      .select("*, school:schools(name, code)")
+      .select("*")
       .eq("kind", KIND)
       .order("created_at", { ascending: false });
-    const { data, error } = await query;
     if (error) toast.error("Erreur de chargement");
     setKits((data as any) || []);
     setLoading(false);
@@ -116,6 +120,7 @@ const ScholarKitsManagement = () => {
 
   const openCreate = () => {
     setForm({ ...emptyForm, standard: [], optional: [] });
+    setUploadError(null);
     setOpen(true);
   };
 
@@ -126,19 +131,13 @@ const ScholarKitsManagement = () => {
       .eq("kit_id", kit.id)
       .order("sort_order", { ascending: true });
 
-    let schoolOpt: SchoolOption | null = null;
-    if (kit.school_id) {
-      const { data: s } = await supabase.from("schools").select("id,name,code,logo_url,city").eq("id", kit.school_id).maybeSingle();
-      if (s) schoolOpt = s as SchoolOption;
-    }
     const all = (items as KitItem[]) || [];
+    setUploadError(null);
     setForm({
       id: kit.id,
       name: kit.name,
       category: kit.category || "",
       grade_level: kit.grade_level,
-      school_id: kit.school_id || "",
-      school: schoolOpt,
       image_url: kit.image_url || "",
       description: kit.description || "",
       options: kit.options || "",
@@ -179,8 +178,8 @@ const ScholarKitsManagement = () => {
   );
 
   const save = async () => {
-    if (!form.name || !form.category || !form.grade_level || !form.school_id) {
-      return toast.error("Nom, catégorie, niveau et établissement sont obligatoires.");
+    if (!form.name || !form.category || !form.grade_level) {
+      return toast.error("Nom, catégorie et niveau sont obligatoires.");
     }
     setSaving(true);
     try {
@@ -188,7 +187,7 @@ const ScholarKitsManagement = () => {
         name: form.name,
         category: form.category,
         grade_level: form.grade_level,
-        school_id: form.school_id,
+        school_id: null,
         image_url: form.image_url || null,
         description: form.description || null,
         options: form.options || null,
@@ -252,15 +251,8 @@ const ScholarKitsManagement = () => {
 
   const catLabel = (c: string | null) => CATEGORIES.find((x) => x.value === c)?.label || "—";
 
-  const schoolsList = useMemo(() => {
-    const map = new Map<string, string>();
-    kits.forEach((k) => { if (k.school_id && k.school?.name) map.set(k.school_id, k.school.name); });
-    return Array.from(map.entries());
-  }, [kits]);
-
   const filtered = kits.filter((k) => {
     if (filterCategory !== "all" && k.category !== filterCategory) return false;
-    if (filterSchool !== "all" && k.school_id !== filterSchool) return false;
     if (filterActive === "active" && !k.is_active) return false;
     if (filterActive === "inactive" && k.is_active) return false;
     return true;
@@ -374,19 +366,10 @@ const ScholarKitsManagement = () => {
                   <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ex : Kit Scolaire CE2 — Standard" />
                 </div>
                 <div className="md:col-span-2 space-y-2">
-                  <Label>Établissement lié *</Label>
-                  <SchoolCombobox
-                    adminMode
-                    value={form.school_id}
-                    onChange={(s) => setForm({ ...form, school_id: s?.id || "", school: s })}
-                    placeholder="Rechercher un établissement…"
-                  />
-                </div>
-                <div className="md:col-span-2 space-y-2">
                   <Label>Image de couverture</Label>
                   <div className="flex items-start gap-3">
                     <div className="w-24 h-24 rounded-lg border bg-muted/40 flex items-center justify-center overflow-hidden shrink-0">
-                      {form.image_url ? <img src={form.image_url} alt="" className="w-full h-full object-cover" /> : <ImageIcon className="h-6 w-6 text-muted-foreground" />}
+                      {form.image_url ? <img src={form.image_url} alt="Aperçu" className="w-full h-full object-cover" /> : <ImageIcon className="h-6 w-6 text-muted-foreground" />}
                     </div>
                     <div className="flex-1 space-y-2">
                       <input
@@ -402,10 +385,16 @@ const ScholarKitsManagement = () => {
                           {uploading ? "Envoi…" : form.image_url ? "Remplacer" : "Choisir une image"}
                         </Button>
                         {form.image_url && (
-                          <Button type="button" variant="ghost" size="sm" onClick={() => setForm({ ...form, image_url: "" })}>Supprimer</Button>
+                          <Button type="button" variant="ghost" size="sm" onClick={() => { setForm({ ...form, image_url: "" }); setUploadError(null); }}>Supprimer</Button>
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground">JPG/PNG/WEBP · max 5 Mo.</p>
+                      {uploadError && (
+                        <div className="flex items-start gap-1.5 text-xs text-destructive bg-destructive/10 rounded-md px-2 py-1.5">
+                          <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                          <span>{uploadError}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -457,13 +446,6 @@ const ScholarKitsManagement = () => {
                 {CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
               </SelectContent>
             </Select>
-            <Select value={filterSchool} onValueChange={setFilterSchool}>
-              <SelectTrigger className="w-[220px]"><SelectValue placeholder="Établissement" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous établissements</SelectItem>
-                {schoolsList.map(([id, name]) => <SelectItem key={id} value={id}>{name}</SelectItem>)}
-              </SelectContent>
-            </Select>
             <Select value={filterActive} onValueChange={setFilterActive}>
               <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -485,7 +467,7 @@ const ScholarKitsManagement = () => {
                   <tr className="text-left border-b">
                     <th className="p-2">Nom</th>
                     <th className="p-2">Catégorie</th>
-                    <th className="p-2">Établissement</th>
+                    <th className="p-2">Niveau</th>
                     <th className="p-2">Prix total</th>
                     <th className="p-2">Statut</th>
                     <th className="p-2 text-right">Actions</th>
@@ -496,7 +478,7 @@ const ScholarKitsManagement = () => {
                     <tr key={k.id} className="border-b hover:bg-muted/30">
                       <td className="p-2 font-medium">{k.name}</td>
                       <td className="p-2"><Badge variant="secondary">{catLabel(k.category)}</Badge></td>
-                      <td className="p-2">{k.school?.name || <span className="text-muted-foreground">—</span>}</td>
+                      <td className="p-2">{k.grade_level}</td>
                       <td className="p-2 whitespace-nowrap">{new Intl.NumberFormat("fr-FR").format(k.total_price || 0)} FCFA</td>
                       <td className="p-2">
                         <Badge variant={k.is_active ? "default" : "outline"}>{k.is_active ? "Actif" : "Inactif"}</Badge>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { Package, ShoppingCart, Search, Sparkles, ChevronDown, ChevronUp, Zap } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -93,11 +93,11 @@ const KitsEcole = () => {
         .eq("status", "published")
         .order("grade_level", { ascending: true });
       if (isPublic) {
-        q = q.is("school_id", null);
+        q = q.eq("kind", "scolaire");
       } else if (school) {
-        q = q.eq("school_id", school.id);
+        q = q.eq("kind", "ecole").eq("school_id", school.id);
       } else {
-        q = q.not("school_id", "is", null);
+        q = q.eq("kind", "ecole").not("school_id", "is", null);
       }
       const { data } = await q;
       const parsed: Kit[] = (data || []).map((k: any) => ({
@@ -394,6 +394,9 @@ const KitsEcole = () => {
                           <Button size="sm" variant="outline" className="w-full h-7 text-[10px]" onClick={() => handleAddKit(kit)} disabled={isBuying}>
                             <ShoppingCart className="h-3 w-3 mr-1" /> Ajouter au panier
                           </Button>
+                          <Link to={`/kits-scolaires/${kit.id}`} className="text-[10px] text-center text-primary hover:underline">
+                            Voir le détail
+                          </Link>
                         </div>
                       </div>
                     </CardContent>
