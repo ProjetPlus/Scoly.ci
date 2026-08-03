@@ -206,7 +206,21 @@ const TeamDashboard = () => {
     );
   }
 
-  if (!isModerator) return null;
+  if (!allowed) {
+    return (
+      <main className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto px-4 py-24">
+          <AccessDenied
+            title="Espace équipe interne réservé"
+            description="Votre compte n'a aucun rôle équipe (modération, commercial, comptabilité)."
+          />
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
 
   return (
     <main className="min-h-screen bg-background">
