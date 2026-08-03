@@ -27,6 +27,11 @@ import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { cn } from "@/lib/utils";
+import { canAccessTeamSection } from "@/lib/rbac";
+import AccessDenied from "@/components/AccessDenied";
+import CommercialDashboard from "@/components/team/CommercialDashboard";
+import ComptableDashboard from "@/components/team/ComptableDashboard";
+
 
 const TeamDashboard = () => {
   const { user, roles, rolesLoading } = useAuth();
