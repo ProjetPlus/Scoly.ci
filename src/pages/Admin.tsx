@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { canAccessAdminSection } from "@/lib/rbac";
+import AccessDenied from "@/components/AccessDenied";
+
 import { 
   LayoutDashboard, 
   Package, 
@@ -100,12 +104,14 @@ type TabType =
 
 const Admin = () => {
   useLanguage();
+  const { roles } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openMenuGroup, setOpenMenuGroup] = useState<string | null>(null);
   const sidebarRef = useRef<HTMLElement | null>(null);
 
-  const menuGroups: Array<{ label: string; items: Array<{ id: string; label: string; icon: any }> }> = [
+  const allMenuGroups: Array<{ label: string; items: Array<{ id: string; label: string; icon: any }> }> = [
+
     {
       label: "Pilotage",
       items: [
@@ -159,12 +165,19 @@ const Admin = () => {
       ],
     },
   ];
+
+  const menuGroups = allMenuGroups
+    .map((g) => ({ ...g, items: g.items.filter((i) => canAccessAdminSection(roles, i.id)) }))
+    .filter((g) => g.items.length > 0);
   const menuItems = menuGroups.flatMap((g) => g.items);
+  const canRender = (section: string) =>
+    activeTab === section && canAccessAdminSection(roles, section);
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
     setMobileMenuOpen(false);
   };
+
 
   return (
     <main className="min-h-screen bg-background overflow-x-hidden">
@@ -298,28 +311,32 @@ const Admin = () => {
           
           <div className="min-w-0 max-w-full overflow-x-hidden p-3 sm:p-6 lg:p-8 pb-20 lg:pb-8 pt-4">
 
-          {activeTab === "dashboard" && <AdminDashboard />}
-          {activeTab === "stats" && <AdvancedStats />}
-          {activeTab === "products" && <ProductsTab />}
-          
-          {activeTab === "categories" && <CategoriesTab />}
-          {activeTab === "orders" && <OrdersTab />}
-          {activeTab === "payments" && <PaymentsTab />}
-          {activeTab === "deliveries" && <DeliveriesTab />}
-          {activeTab === "users" && <UserManagement />}
-          {activeTab === "commissions" && <CommissionsTab />}
-          {activeTab === "promotions_mgmt" && <PromotionsManagement />}
-          {activeTab === "flash_deals" && <FlashDealsManagement />}
-          {activeTab === "review" && <PublicationsReview />}
-          {activeTab === "articles" && <ArticlesTab />}
-          {activeTab === "promotions" && <CouponManagement />}
-          {activeTab === "advertisements" && <AdvertisementsManagement />}
-          {activeTab === "faq" && <FAQManagement />}
-          {activeTab === "referrals" && <ReferralsAdminTab />}
-          {activeTab === "settings" && <PlatformSettings />}
-          {activeTab === "zones" && <ZonesManagement />}
-          {activeTab === "school_kits" && <SchoolKitsManagement />}
-          {activeTab === "scholar_kits" && <ScholarKitsManagement />}
+          {canRender("dashboard") && <AdminDashboard />}
+          {canRender("stats") && <AdvancedStats />}
+          {canRender("products") && <ProductsTab />}
+
+          {canRender("categories") && <CategoriesTab />}
+          {canRender("orders") && <OrdersTab />}
+          {canRender("payments") && <PaymentsTab />}
+          {canRender("deliveries") && <DeliveriesTab />}
+          {canRender("users") && <UserManagement />}
+          {canRender("commissions") && <CommissionsTab />}
+          {canRender("promotions_mgmt") && <PromotionsManagement />}
+          {canRender("flash_deals") && <FlashDealsManagement />}
+          {canRender("review") && <PublicationsReview />}
+          {canRender("articles") && <ArticlesTab />}
+          {canRender("promotions") && <CouponManagement />}
+          {canRender("advertisements") && <AdvertisementsManagement />}
+          {canRender("faq") && <FAQManagement />}
+          {canRender("referrals") && <ReferralsAdminTab />}
+          {canRender("settings") && <PlatformSettings />}
+          {canRender("zones") && <ZonesManagement />}
+          {canRender("school_kits") && <SchoolKitsManagement />}
+          {canRender("scholar_kits") && <ScholarKitsManagement />}
+          {!canAccessAdminSection(roles, activeTab) && (
+            <AccessDenied description="Votre rôle ne vous autorise pas à ouvrir cette section d'administration." />
+          )}
+
           </div>
         </div>
       </div>
