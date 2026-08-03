@@ -161,12 +161,19 @@ const Admin = () => {
       ],
     },
   ];
+
+  const menuGroups = allMenuGroups
+    .map((g) => ({ ...g, items: g.items.filter((i) => canAccessAdminSection(roles, i.id)) }))
+    .filter((g) => g.items.length > 0);
   const menuItems = menuGroups.flatMap((g) => g.items);
+  const canRender = (section: string) =>
+    activeTab === section && canAccessAdminSection(roles, section);
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
     setMobileMenuOpen(false);
   };
+
 
   return (
     <main className="min-h-screen bg-background overflow-x-hidden">
