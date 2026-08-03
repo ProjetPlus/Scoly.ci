@@ -29,10 +29,9 @@ import Footer from "@/components/Footer";
 import { cn } from "@/lib/utils";
 
 const TeamDashboard = () => {
-  const { user } = useAuth();
+  const { user, roles, rolesLoading } = useAuth();
   const { language } = useLanguage();
   const navigate = useNavigate();
-  const [isModerator, setIsModerator] = useState(false);
   const [loading, setLoading] = useState(true);
   const [articles, setArticles] = useState<any[]>([]);
   const [comments, setComments] = useState<any[]>([]);
@@ -45,32 +44,27 @@ const TeamDashboard = () => {
     publishedToday: 0
   });
 
-  useEffect(() => {
-    checkModeratorRole();
-  }, [user]);
+  const canModerate = canAccessTeamSection(roles, "moderation");
+  const canCommercial = canAccessTeamSection(roles, "commercial");
+  const canFinance = canAccessTeamSection(roles, "finance");
+  const allowed = canModerate || canCommercial || canFinance;
+  const defaultTab = canModerate ? "pending" : canCommercial ? "commercial" : "finance";
 
-  const checkModeratorRole = async () => {
+  useEffect(() => {
+    if (rolesLoading) return;
     if (!user) {
       navigate("/auth");
       return;
     }
-
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .in("role", ["admin", "moderator"]);
-
-    if (!data || data.length === 0) {
-      toast.error("Accès refusé. Vous n'êtes pas modérateur.");
-      navigate("/");
+    if (!allowed) {
+      setLoading(false);
       return;
     }
-
-    setIsModerator(true);
     setLoading(false);
-    fetchData();
-  };
+    if (canModerate) fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, rolesLoading, allowed, canModerate]);
+
 
   const fetchData = async () => {
     await Promise.all([
