@@ -228,90 +228,108 @@ const TeamDashboard = () => {
       
       <div className="container mx-auto px-4 py-24">
         <div className="mb-8">
-          <h1 className="text-3xl font-display font-bold text-foreground">
-            {language === 'fr' ? 'Espace Modération' : language === 'en' ? 'Moderation Space' : language === 'de' ? 'Moderationsbereich' : 'Espacio de Moderación'}
-          </h1>
+          <h1 className="text-3xl font-display font-bold text-foreground">Espace équipe</h1>
           <p className="text-muted-foreground">
-            {language === 'fr' ? 'Gérez les articles et commentaires de la communauté' : 
-             language === 'en' ? 'Manage community articles and comments' :
-             language === 'de' ? 'Verwalten Sie Community-Artikel und Kommentare' : 
-             'Gestiona los artículos y comentarios de la comunidad'}
+            Sections visibles selon votre rôle (modération, commercial, comptabilité).
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-yellow-100 dark:bg-yellow-900/50 rounded-xl">
-                  <Clock className="h-6 w-6 text-yellow-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-yellow-700 dark:text-yellow-400">Articles en attente</p>
-                  <p className="text-3xl font-bold text-yellow-800 dark:text-yellow-300">{stats.pendingArticles}</p>
-                </div>
+        {canModerate && (
+          <>
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Card className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-yellow-100 dark:bg-yellow-900/50 rounded-xl">
+                      <Clock className="h-6 w-6 text-yellow-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-yellow-700 dark:text-yellow-400">Articles en attente</p>
+                      <p className="text-3xl font-bold text-yellow-800 dark:text-yellow-300">{stats.pendingArticles}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-xl">
+                      <MessageSquare className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-blue-700 dark:text-blue-400">Commentaires à modérer</p>
+                      <p className="text-3xl font-bold text-blue-800 dark:text-blue-300">{stats.pendingComments}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-green-100 dark:bg-green-900/50 rounded-xl">
+                      <CheckCircle className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-green-700 dark:text-green-400">Publiés aujourd'hui</p>
+                      <p className="text-3xl font-bold text-green-800 dark:text-green-300">{stats.publishedToday}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Search */}
+            <div className="mb-6">
+              <div className="relative max-w-md">
+                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Rechercher un article..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-10"
+                />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </>
+        )}
 
-          <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-xl">
-                  <MessageSquare className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-blue-700 dark:text-blue-400">Commentaires à modérer</p>
-                  <p className="text-3xl font-bold text-blue-800 dark:text-blue-300">{stats.pendingComments}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-100 dark:bg-green-900/50 rounded-xl">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-green-700 dark:text-green-400">Publiés aujourd'hui</p>
-                  <p className="text-3xl font-bold text-green-800 dark:text-green-300">{stats.publishedToday}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Search */}
-        <div className="mb-6">
-          <div className="relative max-w-md">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Rechercher un article..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </div>
-
-        <Tabs defaultValue="pending" className="space-y-6">
+        <Tabs defaultValue={defaultTab} className="space-y-6">
           <TabsList>
-            <TabsTrigger value="pending" className="gap-2">
-              <Clock size={16} />
-              En attente ({pendingArticles.length})
-            </TabsTrigger>
-            <TabsTrigger value="published" className="gap-2">
-              <CheckCircle size={16} />
-              Publiés ({publishedArticles.length})
-            </TabsTrigger>
-            <TabsTrigger value="comments" className="gap-2">
-              <MessageSquare size={16} />
-              Commentaires ({comments.length})
-            </TabsTrigger>
+            {canModerate && (
+              <>
+                <TabsTrigger value="pending" className="gap-2">
+                  <Clock size={16} />
+                  En attente ({pendingArticles.length})
+                </TabsTrigger>
+                <TabsTrigger value="published" className="gap-2">
+                  <CheckCircle size={16} />
+                  Publiés ({publishedArticles.length})
+                </TabsTrigger>
+                <TabsTrigger value="comments" className="gap-2">
+                  <MessageSquare size={16} />
+                  Commentaires ({comments.length})
+                </TabsTrigger>
+              </>
+            )}
+            {canCommercial && <TabsTrigger value="commercial">Mes zones</TabsTrigger>}
+            {canFinance && <TabsTrigger value="finance">Finance</TabsTrigger>}
           </TabsList>
+
+          {canCommercial && (
+            <TabsContent value="commercial">
+              <CommercialDashboard />
+            </TabsContent>
+          )}
+          {canFinance && (
+            <TabsContent value="finance">
+              <ComptableDashboard />
+            </TabsContent>
+          )}
+
+
 
           <TabsContent value="pending">
             <div className="bg-card rounded-xl border border-border overflow-hidden">
