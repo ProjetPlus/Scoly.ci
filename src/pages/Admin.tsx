@@ -100,12 +100,14 @@ type TabType =
 
 const Admin = () => {
   useLanguage();
+  const { roles } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openMenuGroup, setOpenMenuGroup] = useState<string | null>(null);
   const sidebarRef = useRef<HTMLElement | null>(null);
 
-  const menuGroups: Array<{ label: string; items: Array<{ id: string; label: string; icon: any }> }> = [
+  const allMenuGroups: Array<{ label: string; items: Array<{ id: string; label: string; icon: any }> }> = [
+
     {
       label: "Pilotage",
       items: [
