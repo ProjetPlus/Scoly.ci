@@ -30,6 +30,7 @@ import {
   FileText,
   Menu,
   UserPlus,
+  Shield,
   Zap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import UserManagement from "@/components/admin/UserManagement";
+import RolesPermissionsManagement from "@/components/admin/RolesPermissionsManagement";
 import ProductForm from "@/components/admin/ProductForm";
 import BulkProductImport from "@/components/admin/BulkProductImport";
 import PublicationsReview from "@/components/admin/PublicationsReview";
@@ -79,6 +81,7 @@ type TabType =
   | "categories"
   | "orders"
   | "users"
+  | "roles"
   | "articles"
   | "review"
   | "promotions"
@@ -144,6 +147,7 @@ const Admin = () => {
       label: "Utilisateurs & zones",
       items: [
         { id: "users", label: "Utilisateurs", icon: Users },
+        { id: "roles", label: "Rôles & permissions", icon: Shield },
         { id: "zones", label: "Zones & Commerciaux", icon: Truck },
         { id: "referrals", label: "Référents", icon: UserPlus },
         { id: "commissions", label: "Commissions", icon: DollarSign },
@@ -320,6 +324,7 @@ const Admin = () => {
           {canRender("payments") && <PaymentsTab />}
           {canRender("deliveries") && <DeliveriesTab />}
           {canRender("users") && <UserManagement />}
+          {canRender("roles") && <RolesPermissionsManagement />}
           {canRender("commissions") && <CommissionsTab />}
           {canRender("promotions_mgmt") && <PromotionsManagement />}
           {canRender("flash_deals") && <FlashDealsManagement />}

@@ -51,6 +51,7 @@ export const ADMIN_SECTION_ACL: Record<string, readonly AppRole[]> = {
   payments: ["super_admin", "admin"],
   deliveries: ["super_admin", "admin"],
   users: ["super_admin", "admin"],
+  roles: ["super_admin", "admin"],
   zones: ["super_admin", "admin"],
   referrals: ["super_admin", "admin"],
   commissions: ["super_admin", "admin"],
