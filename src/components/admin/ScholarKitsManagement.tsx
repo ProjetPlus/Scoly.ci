@@ -44,12 +44,14 @@ type Kit = {
   is_active: boolean;
   options: string | null;
   description: string | null;
+  school_id: string | null;
 };
 
 const emptyForm = {
   id: "" as string | undefined,
   name: "",
   category: "",
+  school_id: "",
   grade_level: "",
   image_url: "",
   description: "",
@@ -71,6 +73,8 @@ const ScholarKitsManagement = () => {
   const [form, setForm] = useState({ ...emptyForm });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const [schools, setSchools] = useState<{ id: string; name: string }[]>([]);
+  const [filterSchool, setFilterSchool] = useState<string>("all");
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [filterActive, setFilterActive] = useState<string>("all");
 
@@ -116,7 +120,10 @@ const ScholarKitsManagement = () => {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    supabase.from("schools").select("id,name").order("name").then(({ data }) => setSchools((data as any) || []));
+  }, []);
 
   const openCreate = () => {
     setForm({ ...emptyForm, standard: [], optional: [] });
@@ -137,6 +144,7 @@ const ScholarKitsManagement = () => {
       id: kit.id,
       name: kit.name,
       category: kit.category || "",
+      school_id: kit.school_id || "",
       grade_level: kit.grade_level,
       image_url: kit.image_url || "",
       description: kit.description || "",
@@ -187,7 +195,7 @@ const ScholarKitsManagement = () => {
         name: form.name,
         category: form.category,
         grade_level: form.grade_level,
-        school_id: null,
+        school_id: form.school_id || null,
         image_url: form.image_url || null,
         description: form.description || null,
         options: form.options || null,
@@ -253,6 +261,7 @@ const ScholarKitsManagement = () => {
 
   const filtered = kits.filter((k) => {
     if (filterCategory !== "all" && k.category !== filterCategory) return false;
+    if (filterSchool !== "all" && (k.school_id || "none") !== filterSchool) return false;
     if (filterActive === "active" && !k.is_active) return false;
     if (filterActive === "inactive" && k.is_active) return false;
     return true;
@@ -342,6 +351,16 @@ const ScholarKitsManagement = () => {
                       {CATEGORIES.map((c) => (
                         <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Établissement lié</Label>
+                  <Select value={form.school_id || "none"} onValueChange={(v) => setForm({ ...form, school_id: v === "none" ? "" : v })}>
+                    <SelectTrigger><SelectValue placeholder="Aucun établissement" /></SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      <SelectItem value="none">Aucun établissement</SelectItem>
+                      {schools.map((s) => (<SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -444,6 +463,14 @@ const ScholarKitsManagement = () => {
               <SelectContent>
                 <SelectItem value="all">Toutes catégories</SelectItem>
                 {CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={filterSchool} onValueChange={setFilterSchool}>
+              <SelectTrigger className="w-[220px]"><SelectValue placeholder="Établissement" /></SelectTrigger>
+              <SelectContent className="max-h-72">
+                <SelectItem value="all">Tous établissements</SelectItem>
+                <SelectItem value="none">Sans établissement</SelectItem>
+                {schools.map((s) => (<SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>))}
               </SelectContent>
             </Select>
             <Select value={filterActive} onValueChange={setFilterActive}>

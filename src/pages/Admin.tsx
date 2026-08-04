@@ -48,6 +48,8 @@ import { toast } from "sonner";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import UserManagement from "@/components/admin/UserManagement";
 import RolesPermissionsManagement from "@/components/admin/RolesPermissionsManagement";
+import CommissionsManagement from "@/components/admin/CommissionsManagement";
+import ReferralsManagement from "@/components/admin/ReferralsManagement";
 import ProductForm from "@/components/admin/ProductForm";
 import BulkProductImport from "@/components/admin/BulkProductImport";
 import PublicationsReview from "@/components/admin/PublicationsReview";
@@ -325,7 +327,7 @@ const Admin = () => {
           {canRender("deliveries") && <DeliveriesTab />}
           {canRender("users") && <UserManagement />}
           {canRender("roles") && <RolesPermissionsManagement />}
-          {canRender("commissions") && <CommissionsTab />}
+          {canRender("commissions") && <CommissionsManagement />}
           {canRender("promotions_mgmt") && <PromotionsManagement />}
           {canRender("flash_deals") && <FlashDealsManagement />}
           {canRender("review") && <PublicationsReview />}
@@ -333,7 +335,7 @@ const Admin = () => {
           {canRender("promotions") && <CouponManagement />}
           {canRender("advertisements") && <AdvertisementsManagement />}
           {canRender("faq") && <FAQManagement />}
-          {canRender("referrals") && <ReferralsAdminTab />}
+          {canRender("referrals") && <ReferralsManagement />}
           {canRender("settings") && <PlatformSettings />}
           {canRender("zones") && <ZonesManagement />}
           {canRender("school_kits") && <SchoolKitsManagement />}
