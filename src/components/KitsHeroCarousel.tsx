@@ -14,6 +14,8 @@ interface Kit {
   discount_price: number | null;
   total_price: number | null;
   school_id: string | null;
+  kind?: string | null;
+  items?: { id: string; quantity: number | null; estimated_price: number | null; is_optional: boolean | null }[];
   school_name?: string | null;
 }
 
@@ -24,11 +26,10 @@ const CATEGORY_LABELS: Record<string, string> = {
   kit_complet_clad: "Kit Complet +",
 };
 
-const formatFCFA = (v: number) =>
-  new Intl.NumberFormat("fr-FR").format(Math.round(v || 0)) + " FCFA";
+import { formatFCFA, kitBasePrice } from "@/lib/kitPricing";
 
 const KitCard = ({ kit, type }: { kit: Kit; type: "public" | "ecole" }) => {
-  const price = kit.discount_price ?? kit.total_price ?? 0;
+  const price = kitBasePrice(kit as any);
   return (
     <Link
       to={`/kits-scolaires?type=${type}&kit=${kit.id}`}
@@ -42,6 +43,9 @@ const KitCard = ({ kit, type }: { kit: Kit; type: "public" | "ecole" }) => {
             alt={kit.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             fallbackSrc="/placeholder.svg"
+            width={240}
+            height={240}
+            sizes="(max-width: 640px) 40vw, (max-width: 1024px) 25vw, 14vw"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-accent text-primary-foreground p-2">
@@ -83,7 +87,7 @@ const KitsHeroCarousel = () => {
     (async () => {
       const { data } = await supabase
         .from("smart_kits")
-        .select("id,name,grade_level,category,image_url,discount_price,total_price,school_id,schools(name)")
+        .select("id,name,grade_level,category,image_url,discount_price,total_price,school_id,kind,schools(name),items:smart_kit_items(id,quantity,estimated_price,is_optional)")
         .eq("is_active", true)
         .eq("status", "published")
         .order("created_at", { ascending: false })
@@ -93,8 +97,8 @@ const KitsHeroCarousel = () => {
         ...k,
         school_name: k.schools?.name ?? null,
       }));
-      setPublicKits(mapped.filter((k) => !k.school_id).slice(0, 8));
-      setSchoolKits(mapped.filter((k) => k.school_id).slice(0, 8));
+      setPublicKits(mapped.filter((k) => k.kind === "scolaire").slice(0, 8));
+      setSchoolKits(mapped.filter((k) => k.kind !== "scolaire").slice(0, 8));
     })();
     return () => { cancelled = true; };
   }, []);
