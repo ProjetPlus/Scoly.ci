@@ -170,7 +170,7 @@ const KitDetail = () => {
             <div>
               <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-muted border">
                 {kit.image_url ? (
-                  <SmartImage src={kit.image_url} alt={kit.name} fallbackSrc="/placeholder.svg" className="h-full w-full object-cover" />
+                  <SmartImage src={kit.image_url} alt={kit.name} fallbackSrc="/placeholder.svg" className="h-full w-full object-cover" width={800} height={800} priority sizes="(max-width: 768px) 100vw, 45vw" />
                 ) : (
                   <div className="h-full w-full flex flex-col items-center justify-center bg-gradient-to-br from-primary via-primary/80 to-accent text-primary-foreground">
                     <Sparkles className="h-10 w-10 mb-2" />
