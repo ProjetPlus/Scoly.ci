@@ -46,8 +46,8 @@ type Kit = {
   items?: KitItem[];
 };
 
-const formatFCFA = (v: number) =>
-  new Intl.NumberFormat("fr-FR").format(Math.round(v || 0)) + " FCFA";
+import { kitTotalPrice, formatFCFA } from "@/lib/kitPricing";
+
 
 const KitCoverFallback = ({ kit, schoolName, isPublic }: { kit: Kit; schoolName?: string; isPublic: boolean }) => (
   <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary/80 to-accent text-primary-foreground">
@@ -138,13 +138,8 @@ const KitsEcole = () => {
     return Array.from(groups.entries());
   }, [visibleKits, isPublic]);
 
-  const computePrice = (kit: Kit) => {
-    const sel = selected[kit.id] || new Set<string>();
-    return (kit.items || []).reduce((sum, it) => {
-      if (it.is_optional && !sel.has(it.id)) return sum;
-      return sum + (Number(it.estimated_price) || 0) * (Number(it.quantity) || 0);
-    }, 0);
-  };
+  const computePrice = (kit: Kit) => kitTotalPrice(kit, selected[kit.id] || new Set<string>());
+
 
   const toggleOption = (kitId: string, itemId: string) => {
     setSelected((prev) => {
@@ -190,19 +185,21 @@ const KitsEcole = () => {
   };
 
   const handleBuyNow = async (kit: Kit) => {
-    if (!user) {
-      toast.info("Connectez-vous pour finaliser l'achat.");
-      navigate("/auth?redirect=/checkout");
-      return;
-    }
     setBuying(kit.id);
     try {
+      // Le kit est TOUJOURS ajouté au panier, connecté ou non.
       addKit(buildKitCartEntry(kit));
+      if (!user) {
+        toast.info("Kit ajouté. Connectez-vous pour valider la commande.");
+        navigate("/auth?redirect=/checkout");
+        return;
+      }
       navigate("/checkout");
     } finally {
       setBuying(null);
     }
   };
+
 
 
   return (
@@ -301,7 +298,7 @@ const KitsEcole = () => {
                   </Badge>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
-                  {groupKits.map((kit) => {
+                  {groupKits.map((kit, kitIndex) => {
                 const items = kit.items || [];
                 const optional = items.filter((i) => i.is_optional);
                 const mandatory = items.filter((i) => !i.is_optional);
@@ -309,18 +306,23 @@ const KitsEcole = () => {
                 const isOpen = !!expanded[kit.id];
                 const isBuying = buying === kit.id;
                 return (
-                  <Card id={`kit-${kit.id}`} key={kit.id} className="group overflow-hidden hover:shadow-md transition-shadow flex flex-col">
-                    <div className="relative aspect-square w-full bg-muted">
+                  <Card id={`kit-${kit.id}`} key={kit.id} className="group overflow-hidden hover:shadow-md transition-shadow flex flex-col min-w-0">
+                    <div className="relative aspect-square w-full bg-muted overflow-hidden">
                       {kit.image_url ? (
                         <SmartImage
                           src={kit.image_url}
                           alt={kit.name}
                           fallbackSrc="/placeholder.svg"
                           className="h-full w-full object-cover"
+                          width={320}
+                          height={320}
+                          priority={kitIndex < 3}
+                          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
                         />
                       ) : (
                         <KitCoverFallback kit={kit} schoolName={kit.school_name || undefined} isPublic={isPublic} />
                       )}
+
                       {kit.category && (
                         <Badge className="absolute top-1.5 left-1.5 bg-background/95 text-foreground border text-[9px] px-1.5 py-0">
                           {CATEGORY_LABELS[kit.category] || kit.category}

@@ -54,8 +54,8 @@ type Kit = {
   items?: KitItem[];
 };
 
-const formatFCFA = (v: number) =>
-  new Intl.NumberFormat("fr-FR").format(Math.round(v || 0)) + " FCFA";
+import { kitTotalPrice, formatFCFA } from "@/lib/kitPricing";
+
 
 const KitDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -89,10 +89,8 @@ const KitDetail = () => {
   const mandatory = kit?.items?.filter((i) => !i.is_optional) || [];
   const optional = kit?.items?.filter((i) => i.is_optional) || [];
 
-  const price = (kit?.items || []).reduce((s, it) => {
-    if (it.is_optional && !selected.has(it.id)) return s;
-    return s + (Number(it.estimated_price) || 0) * (Number(it.quantity) || 0);
-  }, 0);
+  const price = kit ? kitTotalPrice(kit, selected) : 0;
+
 
   const toggle = (itemId: string) => {
     setSelected((prev) => {
@@ -131,17 +129,18 @@ const KitDetail = () => {
     if (e) { addKit(e); toast.success("Kit ajouté au panier"); }
   };
   const handleBuyNow = () => {
-    if (!user) {
-      toast.info("Connectez-vous pour finaliser l'achat.");
-      navigate("/auth?redirect=/checkout");
-      return;
-    }
     const e = buildEntry();
     if (!e) return;
     setBuying(true);
     addKit(e);
+    if (!user) {
+      toast.info("Kit ajouté. Connectez-vous pour valider la commande.");
+      navigate("/auth?redirect=/checkout");
+      return;
+    }
     navigate("/checkout");
   };
+
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -171,7 +170,7 @@ const KitDetail = () => {
             <div>
               <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-muted border">
                 {kit.image_url ? (
-                  <SmartImage src={kit.image_url} alt={kit.name} fallbackSrc="/placeholder.svg" className="h-full w-full object-cover" />
+                  <SmartImage src={kit.image_url} alt={kit.name} fallbackSrc="/placeholder.svg" className="h-full w-full object-cover" width={800} height={800} priority sizes="(max-width: 768px) 100vw, 45vw" />
                 ) : (
                   <div className="h-full w-full flex flex-col items-center justify-center bg-gradient-to-br from-primary via-primary/80 to-accent text-primary-foreground">
                     <Sparkles className="h-10 w-10 mb-2" />

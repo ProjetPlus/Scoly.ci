@@ -1406,6 +1406,7 @@ export type Database = {
       order_items: {
         Row: {
           id: string
+          kit_id: string | null
           order_id: string
           product_id: string | null
           product_name: string
@@ -1415,6 +1416,7 @@ export type Database = {
         }
         Insert: {
           id?: string
+          kit_id?: string | null
           order_id: string
           product_id?: string | null
           product_name: string
@@ -1424,6 +1426,7 @@ export type Database = {
         }
         Update: {
           id?: string
+          kit_id?: string | null
           order_id?: string
           product_id?: string | null
           product_name?: string
@@ -1432,6 +1435,13 @@ export type Database = {
           unit_price?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "order_items_kit_id_fkey"
+            columns: ["kit_id"]
+            isOneToOne: false
+            referencedRelation: "smart_kits"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "order_items_order_id_fkey"
             columns: ["order_id"]
@@ -3015,6 +3025,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      can_manage_module: {
+        Args: { _action?: string; _module: string; _user_id: string }
+        Returns: boolean
       }
       check_password_strength: { Args: { _password: string }; Returns: boolean }
       check_rate_limit: {
