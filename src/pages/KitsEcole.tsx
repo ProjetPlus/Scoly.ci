@@ -138,13 +138,8 @@ const KitsEcole = () => {
     return Array.from(groups.entries());
   }, [visibleKits, isPublic]);
 
-  const computePrice = (kit: Kit) => {
-    const sel = selected[kit.id] || new Set<string>();
-    return (kit.items || []).reduce((sum, it) => {
-      if (it.is_optional && !sel.has(it.id)) return sum;
-      return sum + (Number(it.estimated_price) || 0) * (Number(it.quantity) || 0);
-    }, 0);
-  };
+  const computePrice = (kit: Kit) => kitTotalPrice(kit, selected[kit.id] || new Set<string>());
+
 
   const toggleOption = (kitId: string, itemId: string) => {
     setSelected((prev) => {
