@@ -4,6 +4,7 @@ import { Package, Sparkles, GraduationCap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import SmartImage from "@/components/SmartImage";
+import { formatFCFA, kitBasePrice } from "@/lib/kitPricing";
 
 interface Kit {
   id: string;
@@ -26,7 +27,6 @@ const CATEGORY_LABELS: Record<string, string> = {
   kit_complet_clad: "Kit Complet +",
 };
 
-import { formatFCFA, kitBasePrice } from "@/lib/kitPricing";
 
 const KitCard = ({ kit, type }: { kit: Kit; type: "public" | "ecole" }) => {
   const price = kitBasePrice(kit as any);
