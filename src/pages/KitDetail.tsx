@@ -89,10 +89,8 @@ const KitDetail = () => {
   const mandatory = kit?.items?.filter((i) => !i.is_optional) || [];
   const optional = kit?.items?.filter((i) => i.is_optional) || [];
 
-  const price = (kit?.items || []).reduce((s, it) => {
-    if (it.is_optional && !selected.has(it.id)) return s;
-    return s + (Number(it.estimated_price) || 0) * (Number(it.quantity) || 0);
-  }, 0);
+  const price = kit ? kitTotalPrice(kit, selected) : 0;
+
 
   const toggle = (itemId: string) => {
     setSelected((prev) => {
