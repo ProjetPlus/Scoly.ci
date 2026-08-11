@@ -46,8 +46,8 @@ type Kit = {
   items?: KitItem[];
 };
 
-const formatFCFA = (v: number) =>
-  new Intl.NumberFormat("fr-FR").format(Math.round(v || 0)) + " FCFA";
+import { kitTotalPrice, formatFCFA } from "@/lib/kitPricing";
+
 
 const KitCoverFallback = ({ kit, schoolName, isPublic }: { kit: Kit; schoolName?: string; isPublic: boolean }) => (
   <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary/80 to-accent text-primary-foreground">
