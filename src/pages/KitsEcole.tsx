@@ -298,7 +298,7 @@ const KitsEcole = () => {
                   </Badge>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
-                  {groupKits.map((kit) => {
+                  {groupKits.map((kit, kitIndex) => {
                 const items = kit.items || [];
                 const optional = items.filter((i) => i.is_optional);
                 const mandatory = items.filter((i) => !i.is_optional);
@@ -306,18 +306,23 @@ const KitsEcole = () => {
                 const isOpen = !!expanded[kit.id];
                 const isBuying = buying === kit.id;
                 return (
-                  <Card id={`kit-${kit.id}`} key={kit.id} className="group overflow-hidden hover:shadow-md transition-shadow flex flex-col">
-                    <div className="relative aspect-square w-full bg-muted">
+                  <Card id={`kit-${kit.id}`} key={kit.id} className="group overflow-hidden hover:shadow-md transition-shadow flex flex-col min-w-0">
+                    <div className="relative aspect-square w-full bg-muted overflow-hidden">
                       {kit.image_url ? (
                         <SmartImage
                           src={kit.image_url}
                           alt={kit.name}
                           fallbackSrc="/placeholder.svg"
                           className="h-full w-full object-cover"
+                          width={320}
+                          height={320}
+                          priority={kitIndex < 3}
+                          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
                         />
                       ) : (
                         <KitCoverFallback kit={kit} schoolName={kit.school_name || undefined} isPublic={isPublic} />
                       )}
+
                       {kit.category && (
                         <Badge className="absolute top-1.5 left-1.5 bg-background/95 text-foreground border text-[9px] px-1.5 py-0">
                           {CATEGORY_LABELS[kit.category] || kit.category}
