@@ -185,19 +185,21 @@ const KitsEcole = () => {
   };
 
   const handleBuyNow = async (kit: Kit) => {
-    if (!user) {
-      toast.info("Connectez-vous pour finaliser l'achat.");
-      navigate("/auth?redirect=/checkout");
-      return;
-    }
     setBuying(kit.id);
     try {
+      // Le kit est TOUJOURS ajouté au panier, connecté ou non.
       addKit(buildKitCartEntry(kit));
+      if (!user) {
+        toast.info("Kit ajouté. Connectez-vous pour valider la commande.");
+        navigate("/auth?redirect=/checkout");
+        return;
+      }
       navigate("/checkout");
     } finally {
       setBuying(null);
     }
   };
+
 
 
   return (
