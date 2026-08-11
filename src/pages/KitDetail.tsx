@@ -129,17 +129,18 @@ const KitDetail = () => {
     if (e) { addKit(e); toast.success("Kit ajouté au panier"); }
   };
   const handleBuyNow = () => {
-    if (!user) {
-      toast.info("Connectez-vous pour finaliser l'achat.");
-      navigate("/auth?redirect=/checkout");
-      return;
-    }
     const e = buildEntry();
     if (!e) return;
     setBuying(true);
     addKit(e);
+    if (!user) {
+      toast.info("Kit ajouté. Connectez-vous pour valider la commande.");
+      navigate("/auth?redirect=/checkout");
+      return;
+    }
     navigate("/checkout");
   };
+
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
