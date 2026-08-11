@@ -54,8 +54,8 @@ type Kit = {
   items?: KitItem[];
 };
 
-const formatFCFA = (v: number) =>
-  new Intl.NumberFormat("fr-FR").format(Math.round(v || 0)) + " FCFA";
+import { kitTotalPrice, formatFCFA } from "@/lib/kitPricing";
+
 
 const KitDetail = () => {
   const { id } = useParams<{ id: string }>();
