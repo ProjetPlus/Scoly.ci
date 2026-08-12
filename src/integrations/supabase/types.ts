@@ -2363,6 +2363,42 @@ export type Database = {
         }
         Relationships: []
       }
+      security_access_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          allowed: boolean
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          metadata: Json
+          reason: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          allowed?: boolean
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          metadata?: Json
+          reason?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          allowed?: boolean
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          metadata?: Json
+          reason?: string | null
+        }
+        Relationships: []
+      }
       smart_kit_items: {
         Row: {
           category_hint: string | null
@@ -3369,6 +3405,17 @@ export type Database = {
       }
       increment_product_views: {
         Args: { _product_id: string }
+        Returns: undefined
+      }
+      log_sensitive_access: {
+        Args: {
+          _action: string
+          _allowed?: boolean
+          _entity_id?: string
+          _entity_type: string
+          _metadata?: Json
+          _reason?: string
+        }
         Returns: undefined
       }
       pick_available_commercial: { Args: { _zone_id: string }; Returns: string }
