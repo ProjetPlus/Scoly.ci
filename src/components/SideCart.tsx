@@ -12,7 +12,7 @@ import { useState, useMemo } from "react";
 const FREE_SHIPPING_THRESHOLD = 0; // Always free
 
 const SideCart = () => {
-  const { items, itemCount, total, updateQuantity, removeFromCart } = useCart();
+  const { items, kits, itemCount, total, updateQuantity, removeFromCart, removeKit, updateKitQuantity } = useCart();
   const { language, t } = useLanguage();
   const [open, setOpen] = useState(false);
 
@@ -62,7 +62,7 @@ const SideCart = () => {
           </SheetTitle>
         </SheetHeader>
 
-        {items.length === 0 ? (
+        {items.length === 0 && kits.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
             <ShoppingCart size={48} className="text-muted-foreground mb-4" />
             <p className="text-muted-foreground mb-2">
@@ -90,6 +90,46 @@ const SideCart = () => {
 
             {/* Cart items */}
             <div className="flex-1 overflow-y-auto space-y-3 py-4">
+              {kits.map((kit) => (
+                <div key={kit.kit_id} className="flex gap-3 rounded-lg p-3 bg-primary/5 border border-primary/20">
+                  <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-muted">
+                    <SmartImage
+                      src={kit.image_url}
+                      alt={kit.name}
+                      className="w-full h-full object-cover"
+                      fallbackSrc="/placeholder.svg"
+                      sizes="64px"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm font-medium line-clamp-2">{kit.name}</p>
+                      <Badge variant="secondary" className="shrink-0 text-[10px]">Kit</Badge>
+                    </div>
+                    {kit.grade_level && (
+                      <p className="text-[11px] text-muted-foreground">{kit.grade_level}</p>
+                    )}
+                    <div className="flex items-center gap-2 mt-2">
+                      <Button variant="outline" size="icon" className="h-6 w-6"
+                        onClick={() => updateKitQuantity(kit.kit_id, kit.quantity - 1)}>
+                        <Minus size={12} />
+                      </Button>
+                      <span className="text-xs w-5 text-center">{kit.quantity}</span>
+                      <Button variant="outline" size="icon" className="h-6 w-6"
+                        onClick={() => updateKitQuantity(kit.kit_id, kit.quantity + 1)}>
+                        <Plus size={12} />
+                      </Button>
+                      <span className="text-xs font-semibold ml-1">
+                        {formatPrice(kit.price * kit.quantity)}
+                      </span>
+                      <Button variant="ghost" size="icon" className="h-6 w-6 ml-auto text-destructive"
+                        onClick={() => removeKit(kit.kit_id)}>
+                        <Trash2 size={12} />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
               {items.map((item) => {
                 const isOutOfStock = item.product?.stock === 0;
                 const discount = (item.product as any)?.discount_percent || 0;
