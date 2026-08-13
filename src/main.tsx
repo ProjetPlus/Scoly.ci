@@ -7,8 +7,13 @@ createRoot(document.getElementById("root")!).render(<App />);
 // Enregistrement du Service Worker + purge automatique du cache pour tous les visiteurs.
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/sw.js", { updateViaCache: "none" })
+    // Certains environnements (aperçu iframe) ne servent pas /sw.js : on vérifie avant d'enregistrer.
+    fetch("/sw.js", { method: "HEAD" })
+      .then((res) => {
+        if (!res.ok) throw new Error("sw unavailable");
+        return navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" });
+      })
+
       .then((reg) => {
         // Vérifier une mise à jour à chaque chargement et au retour d'onglet.
         reg.update().catch(() => {});
